@@ -6,13 +6,18 @@ const User = require("../models/userModel.js");
 const createIssue = async (req, res) => {
   const { title, description } = req.body;
   const { id } = req.params;
+  const userId = req.user ? req.user.id : req.body.userId;
   try {
     const issue = new Issue({
       title,
       description,
       repository: id,
+      author: userId || undefined,
+      createdAt: new Date()
     });
     await issue.save();
+
+    await Repository.findByIdAndUpdate(id, { $push: { issues: issue._id } });
 
     res.status(201).json(issue);
   } catch (err) {
@@ -48,11 +53,11 @@ const deleteIssueByID = async (req, res) => {
   const {id} = req.params;
 
   try{
-    const issue = Issue.findByIdAndDelete(id);
+    const issue = await Issue.findByIdAndDelete(id);
     if(!issue){
       return res.status(404).json({error:"Issue not found"});
     }
-    res.json(issue,{message:"Issue deleted"});
+    res.json({message:"Issue deleted", issue});
 
   }catch (err) {
     console.error("Error during issue deletion", err.message);
@@ -64,16 +69,16 @@ const getAllIssues = async (req, res) => {
   const {id} = req.params;
   
   try{
-    const issues = Issue.find({repository:id});
+    const issues = await Issue.find({repository:id});
 
     if(!issues){
       return res.status(404).json({error:"Issues not found"});
     } 
 
-    res.status(200).json(issue);
+    res.status(200).json(issues);
 
   }catch (err) {
-    console.error("Error during issue deletion", err.message);
+    console.error("Error fetching issues: ", err.message);
     res.status(500).send("Server error ");
   }
 };

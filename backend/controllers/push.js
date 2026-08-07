@@ -1,6 +1,6 @@
 const fs = require('fs').promises;
 const path = require('path');
-const s3 = require('../config/r2_bucket.');
+const s3 = require('../config/r2_bucket');
 const { PutObjectCommand } = require("@aws-sdk/client-s3");
 
 

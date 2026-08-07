@@ -13,6 +13,14 @@ frontend/dist/
 backend/dist/
 frontend/build/
 backend/build/
+StudyProject.md
+USER_GUIDE.md
+backend/test_merge_deep.js
+backend/test_merge_probe.js
+backend/test_playbook.js
+
+
+
 
 # IDE
 .vscode/
@@ -20,4 +28,4 @@ backend/build/
 
 # OS files
 .DS_Store
-Thumbs.db
+Thumbs.

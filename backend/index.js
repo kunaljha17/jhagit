@@ -1,26 +1,87 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser"); //json to js read and write use
+const bodyParser = require("body-parser");
 const http = require("http");
-const {Server} = require("socket.io");
+const { Server } = require("socket.io");
 const mainRouter = require("./routes/main.router");
 
 const yargs = require("yargs");
-const { hideBin } = require("yargs/helpers"); //use to get attribute which get from console cmd after space
+const { hideBin } = require("yargs/helpers");
 require("dotenv").config();
+
 const { initRepo } = require("./controllers/init");
 const { add } = require("./controllers/add");
 const { commit } = require("./controllers/commit");
 const { pullRepo } = require("./controllers/pull");
 const { pushRepo } = require("./controllers/push");
 const { revertRepo } = require("./controllers/revert");
-const { error } = require("console");
-const { Socket } = require("dgram");
+const { getStatus } = require("./controllers/status");
+const { getLog } = require("./controllers/log");
+const { getDiff } = require("./controllers/diff");
+const { cloneRepo } = require("./controllers/clone");
+const { createBranch } = require("./controllers/branch");
+const { checkout } = require("./controllers/checkout");
+const { mergeBranch } = require("./controllers/merge");
 
 yargs(hideBin(process.argv))
   .command("start", "Start a new server", {}, startServer)
   .command("init", "Initialise a new repository", {}, initRepo)
+  .command("status", "Check status of working directory", {}, getStatus)
+  .command("log", "Show commit log history", {}, getLog)
+  .command(
+    "branch [name]",
+    "Create or list branches",
+    (yargs) => {
+      yargs.positional("name", {
+        describe: "Branch name",
+        type: "string",
+      });
+    },
+    (argv) => {
+      createBranch(argv.name);
+    }
+  )
+  .command(
+    "checkout <target>",
+    "Checkout a branch or commit",
+    (yargs) => {
+      yargs.positional("target", {
+        describe: "Branch or commit ID",
+        type: "string",
+      });
+    },
+    (argv) => {
+      checkout(argv.target);
+    }
+  )
+  .command(
+    "merge <branch>",
+    "Merge a branch into working tree",
+    (yargs) => {
+      yargs.positional("branch", {
+        describe: "Target branch name",
+        type: "string",
+      });
+    },
+    (argv) => {
+      mergeBranch(argv.branch);
+    }
+  )
+  .command(
+    "diff <file>",
+    "Show changes in a file",
+    (yargs) => {
+      yargs.positional("file", {
+        describe: "File to diff",
+        type: "string",
+      });
+    },
+    (argv) => {
+      getDiff(argv.file);
+    }
+  )
+  .command("clone", "Clone repository from R2 remote", {}, cloneRepo)
   .command(
     "add <file>",
     "Add a file to the repository",
@@ -32,7 +93,7 @@ yargs(hideBin(process.argv))
     },
     (argv) => {
       add(argv.file);
-    },
+    }
   )
   .command(
     "commit <message>",
@@ -45,13 +106,13 @@ yargs(hideBin(process.argv))
     },
     (argv) => {
       commit(argv.message);
-    },
+    }
   )
-  .command("push", "Pull commits from S3", {}, pushRepo)
-  .command("pull", "Push commits to S3", {}, pullRepo)
+  .command("push", "Push commits to remote S3/R2 storage", {}, pushRepo)
+  .command("pull", "Pull commits from remote S3/R2 storage", {}, pullRepo)
   .command(
     "revert <commitID>",
-    "file revert successfully",
+    "File revert successfully",
     (yargs) => {
       yargs.positional("commitID", {
         description: "Commit ID to revert to",
@@ -60,7 +121,7 @@ yargs(hideBin(process.argv))
     },
     (argv) => {
       revertRepo(argv.commitID);
-    },
+    }
   )
   .demandCommand(1, "You need at least one command")
   .help().argv;
@@ -70,47 +131,38 @@ function startServer() {
   const port = process.env.PORT || 3002;
   app.use(bodyParser.json());
   app.use(express.json());
-  // app.use(express.urlencoded({ extended: true }));
-  
 
   const mongoURI = process.env.MONGODB_URI;
-  mongoose
-    .connect(mongoURI)
-    .then(() => console.log("MongoDB is connected!"))
-    .catch((err) => console.error("Unable to connect :", err));
+  if (mongoURI) {
+    mongoose
+      .connect(mongoURI)
+      .then(() => console.log("MongoDB connected successfully!"))
+      .catch((err) => console.error("Unable to connect to MongoDB:", err));
+  } else {
+    console.warn("Warning: MONGODB_URI is not defined in environment variables.");
+  }
 
-  app.use(cors({origin:"*"}));
+  app.use(cors({ origin: "*" }));
+  app.use("/", mainRouter);
 
-  app.use("/",mainRouter);
-  
   let user = "test";
+  const httpServer = http.createServer(app);
 
-  const httServer = http.createServer(app);
-  
-  const io = new Server(httServer , {
-    cors:{
-      origin:"*",
-      methods:["GET","POST"],
+  const io = new Server(httpServer, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"],
     },
   });
 
-  io.on("connection",(socket)=>{
-    socket.on("joinRoom",(userID)=>{
+  io.on("connection", (socket) => {
+    socket.on("joinRoom", (userID) => {
       user = userID;
-      console.log("====");
-      console.log(user);
-      console.log("====");
       socket.join(userID);
     });
   });
 
-  const db = mongoose.connection;
-  db.once("open",async()=>{
-    console.log("CRUD operations called");
-    //CRUD Operations
-  })
-
-  httServer.listen(port,()=>{
-    console.log(`Server is running on PORT ${port}`);
+  httpServer.listen(port, () => {
+    console.log(`jhaGit REST & CLI Server running on PORT ${port}`);
   });
 }

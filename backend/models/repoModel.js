@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-
 const RepositorySchema = new Schema({
     name:{
         type:String,
@@ -12,10 +11,13 @@ const RepositorySchema = new Schema({
         type:String,
     },
     content:[{
-        type:String,
-    },],
+        name: { type: String },
+        content: { type: String },
+        updatedAt: { type: Date, default: Date.now }
+    }],
     visibility:{
         type:Boolean,
+        default:true,
     },
     Owner:{
         type:Schema.Types.ObjectId,
@@ -27,9 +29,13 @@ const RepositorySchema = new Schema({
             type:Schema.Types.ObjectId,
             ref:"Issue",
         },
-    ]
+    ],
+    starCount:{
+        type:Number,
+        default:0
+    }
 });
 
-const Repository = mongoose.model("Repository" ,RepositorySchema );
+const Repository = mongoose.model("Repository", RepositorySchema);
 
 module.exports = Repository;

@@ -8,9 +8,12 @@ async function initRepo(){
      try{
         await fs.mkdir(repoPath , {recursive:true}); //create repoPath things
         await fs.mkdir(commitsPath , {recursive:true});//Create commitsPath things
+        await fs.mkdir(path.join(repoPath, "refs", "heads"), { recursive: true });
+        await fs.writeFile(path.join(repoPath, "HEAD"), "main");
+        await fs.writeFile(path.join(repoPath, "refs", "heads", "main"), "");
         await fs.writeFile(
             path.join(repoPath,"config.json"),
-            JSON.stringify({bucket: process.env.S3_BUCKET})
+            JSON.stringify({bucket: process.env.R2_BUCKET || process.env.S3_BUCKET})
         );
         console.log("repository initialised!")
      }catch(err){

@@ -21,6 +21,14 @@ const IssueSchema = new Schema({
         ref:"Repository",
         required:true,
     },
+    author:{
+        type:Schema.Types.ObjectId,
+        ref:"User",
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now,
+    },
 });
 
 const Issue = mongoose.model("Issue",IssueSchema);
