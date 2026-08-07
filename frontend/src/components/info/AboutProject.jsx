@@ -60,7 +60,31 @@ const AboutProject = () => {
                 <strong>Owner Settings:</strong> Repository visibility toggle (Public/Private) and owner-authenticated deletion.
               </li>
               <li>
-                <strong>Authentication & Security:</strong> JWT token authentication with bcrypt password hashing.
+                <strong>2-Step Email Verification & Security:</strong> Mandatory 6-digit email OTP verification, rate-limited resend requests, 10-minute code expiry, 5-attempt brute-force protection, bcrypt password hashing, and JWT session authorization.
+              </li>
+            </ul>
+          </div>
+
+          <div className="info-section">
+            <h2>2-Step Email Verification & Security</h2>
+            <p className="info-bio">
+              jhaGit implements robust, multi-layered security controls to protect user accounts and prevent unauthorized system access:
+            </p>
+            <ul className="feature-list">
+              <li>
+                <strong>Mandatory 2-Step OTP Verification:</strong> New user accounts require verification of a 6-digit One-Time Password (OTP) sent to the registered email address via Nodemailer SMTP. Login access and JWT issuance remain locked until email verification is complete.
+              </li>
+              <li>
+                <strong>OTP Expiration & Resend Cooldown:</strong> Verification codes automatically expire after 10 minutes. Resend requests enforce time-based cooldown limits to prevent email spam and server overload.
+              </li>
+              <li>
+                <strong>Brute-Force Safeguards:</strong> Verification attempts are capped at 5 failed tries. Exceeding the maximum limit locks out further attempts, forcing the user to request a fresh OTP code.
+              </li>
+              <li>
+                <strong>Cryptographic Protection:</strong> User passwords must meet strict security criteria (minimum length, uppercase letter, number, and special character) and are stored securely using <code>bcryptjs</code> with 10 salt rounds. OTPs are stored hashed in the database rather than plain text.
+              </li>
+              <li>
+                <strong>Stateless JWT Session Authorization:</strong> Protected platform APIs enforce token-based authorization with 7-day expiration via HTTP Bearer headers.
               </li>
             </ul>
           </div>
