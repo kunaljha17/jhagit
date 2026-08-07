@@ -289,13 +289,6 @@ node index.js clone
 
 ---
 
-## 📖 Related Guides & Documentation
-
-- 📘 **[USER_GUIDE.md](./USER_GUIDE.md)** — Step-by-step user manual with concrete examples (login, OTP email verification, repository creation, file commits, issues, modal interactions, and CLI/Web engine usage).
-- 📗 **[StudyProject.md](./StudyProject.md)** — Complete architectural analysis, algorithm breakdowns (3-way LCS merge, multi-parent BFS), and code walk-throughs for all CLI & Web controllers.
-- 📙 **[GEMINI.md](./GEMINI.md)** — Testing playbook & OTP email verification debug checklist.
-
----
 
 ## 👤 Author
 

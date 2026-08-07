@@ -1,0 +1,29 @@
+# Backend
+node_modules/
+.env
+
+ 
+
+# Logs
+*.log
+
+# Build folders
+
+dist/
+
+build/
+
+test_merge_deep.js
+test_merge_probe.js
+test_playbook.js
+
+
+
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.

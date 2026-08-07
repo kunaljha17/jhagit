@@ -1,23 +1,12 @@
-# Backend
-backend/node_modules/
-backend/.env
-
-# Frontend
-frontend/node_modules/
+ 
 
 # Logs
 *.log
 
 # Build folders
-frontend/dist/
-backend/dist/
-frontend/build/
-backend/build/
+
 StudyProject.md
 USER_GUIDE.md
-backend/test_merge_deep.js
-backend/test_merge_probe.js
-backend/test_playbook.js
 
 
 
