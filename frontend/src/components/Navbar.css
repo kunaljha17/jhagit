@@ -28,12 +28,17 @@
   color: var(--accent-primary);
 }
 
-.octicon-logo {
-  color: var(--text-primary);
+.octicon-logo,
+.navbar-logo-img {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+
   transition: transform 0.2s ease;
 }
 
-.navbar-brand:hover .octicon-logo {
+.navbar-brand:hover .octicon-logo,
+.navbar-brand:hover .navbar-logo-img {
   transform: scale(1.08);
 }
 

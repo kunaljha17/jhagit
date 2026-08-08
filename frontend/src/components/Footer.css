@@ -31,9 +31,21 @@
   text-decoration: none;
 }
 
+.footer-logo-img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
 .footer-logo-link:hover {
   color: var(--accent-primary);
   text-decoration: none;
+}
+
+.footer-logo-link:hover .footer-logo-img {
+  transform: scale(1.08);
 }
 
 .footer-brand-title {
