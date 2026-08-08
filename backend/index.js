@@ -142,7 +142,22 @@ function startServer() {
     console.warn("Warning: MONGODB_URI is not defined in environment variables.");
   }
 
-  app.use(cors({ origin: "*" }));
+  const allowedOrigins = [
+    "http://localhost:5173",              // local dev frontend
+    "https://jhagit.pages.dev",           // your Cloudflare Pages frontend (update if custom domain)
+  ];
+
+  app.use(cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  }));
+
   app.use("/", mainRouter);
 
   let user = "test";
@@ -150,8 +165,9 @@ function startServer() {
 
   const io = new Server(httpServer, {
     cors: {
-      origin: "*",
+      origin: allowedOrigins,
       methods: ["GET", "POST"],
+      credentials: true,
     },
   });
 
