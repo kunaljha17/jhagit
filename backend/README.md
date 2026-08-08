@@ -2,6 +2,8 @@
 
 The backend core for **jhaGit**, serving as both a **REST API server** (Express + MongoDB + Socket.IO) for the React web dashboard and a **standalone CLI Version Control Tool** (Node.js + Yargs). Includes true 3-way branch merging, Nodemailer OTP email verification, and Cloudflare R2 object storage integration.
 
+> 📖 For complete setup, REST API documentation, CLI commands, and troubleshooting, see the [Backend User Guide](USER_GUIDE_backend.md).
+
 ---
 
 ## 🛠️ Technology Stack
