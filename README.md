@@ -84,7 +84,7 @@
 - **Zero-dependency cloning** — Repository cloning from R2 without requiring native `git`
 
 ### 🔐 Authentication & Security
-- **2-Step OTP email verification** — 6-digit OTP via Resend API / Nodemailer with SHA-256 hashing (plaintext OTPs never stored)
+- **2-Step OTP email verification** — 6-digit OTP via Resend API  with SHA-256 hashing (plaintext OTPs never stored)
 - **Rate-limiting** — 60-second resend cooldown, 5-attempt max, 10-minute TTL expiry
 - **Password strength enforcement** — Regex requiring ≥6 chars, uppercase, digit, and special character
 - **JWT session management** — Bearer token authorization for all protected API endpoints
