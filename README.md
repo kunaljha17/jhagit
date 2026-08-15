@@ -84,7 +84,7 @@
 - **Zero-dependency cloning** — Repository cloning from R2 without requiring native `git`
 
 ### 🔐 Authentication & Security
-- **2-Step OTP email verification** — 6-digit OTP via Resend API  with SHA-256 hashing (plaintext OTPs never stored)
+- **2-Step OTP email verification** — 6-digit OTP via Resend API with SHA-256 hashing (plaintext OTPs never stored)
 - **Rate-limiting** — 60-second resend cooldown, 5-attempt max, 10-minute TTL expiry
 - **Password strength enforcement** — Regex requiring ≥6 chars, uppercase, digit, and special character
 - **JWT session management** — Bearer token authorization for all protected API endpoints
@@ -123,7 +123,7 @@
 | **Database** | MongoDB Atlas (M0 Tier), Mongoose 9 |
 | **Real-Time** | Socket.IO 4, WebSockets |
 | **Cloud Storage** | Cloudflare R2 (S3-Compatible), `@aws-sdk/client-s3` |
-| **Auth & Security** | JWT, Bcrypt.js, SHA-256 Hashing, Resend API, Nodemailer |
+| **Auth & Security** | JWT, Bcrypt.js, SHA-256 Hashing, Resend API (HTTP REST Email) |
 | **Hosting** | Cloudflare Pages (Frontend), Render (Backend) |
 | **Algorithms** | Dynamic Programming (LCS), BFS Graph Traversal, Multi-Parent DAG |
 | **Testing** | Node.js Assert Module (custom test playbooks) |
@@ -272,7 +272,7 @@ jhaGit/
 │   ├── index.js                       # Entry point (server + Yargs CLI)
 │   ├── package.json                   # Backend dependencies
 │   ├── config/
-│   │   ├── mailer.js                  # Nodemailer SMTP transporter
+│   │   ├── mailer.js                  # Resend API email client for OTP delivery
 │   │   ├── otp.js                     # OTP generation & SHA-256 utilities
 │   │   └── r2_bucket.js              # Cloudflare R2 S3 client config
 │   ├── controllers/
@@ -444,14 +444,14 @@ node index.js start
 
 | Layer | Platform | URL |
 |:------|:---------|:----|
-| Frontend | Cloudflare Pages | `https://jhagit.pages.dev` |
+| Frontend | Cloudflare Pages | `https://jhagit.kunalkj.dev` |
 | Backend | Render (Web Service) | `https://jhagit-backend.onrender.com` |
 | Database | MongoDB Atlas (M0) | Internal connection string |
 | Object Storage | Cloudflare R2 | Internal, via S3-compatible SDK |
 
 ### Pre-Deploy Checklist
 
-- [ ] All `.env` values configured on Render (never committed to git)
+- [ ] All `.env` values configured on Render (`MONGODB_URI`, `JWT_SECRET`, `RESEND_API_KEY`, R2 credentials)
 - [ ] `VITE_API_URL` set on Cloudflare Pages, pointing to the Render backend URL
 - [ ] CORS `allowedOrigins` in Express includes the exact Cloudflare Pages URL (no trailing slash)
 - [ ] Socket.IO CORS config matches the same allowed origins
@@ -480,7 +480,7 @@ wrangler pages deploy dist --project-name=jhagit
 | CORS error in console | Origin mismatch | Verify exact URL in `allowedOrigins` (no trailing slash) |
 | Session lost on refresh | Cookie/token not persisting | Check `sameSite`/`secure` cookie settings |
 | First request hangs | Render cold start | Wait 30–60s, or use UptimeRobot to keep alive |
-| OTP email never arrives | SMTP credentials wrong | Check Render env vars, verify Gmail App Password |
+| OTP email never arrives | `RESEND_API_KEY` missing/invalid or unverified domain | Verify `RESEND_API_KEY` in Render env vars and sender in Resend dashboard |
 | MongoDB connection fails | IP not whitelisted | Confirm Atlas allows `0.0.0.0/0`, check `MONGODB_URI` |
 
 ---
@@ -489,25 +489,47 @@ wrangler pages deploy dist --project-name=jhagit
 
 ### Backend (`backend/.env`)
 
+```env
+# Server Port (Render sets this dynamically)
+PORT=3002
+
+# MongoDB Atlas Connection String
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/GithubClone?retryWrites=true&w=majority
+
+# JWT Secret
+JWT_SECRET=your_jwt_secret_key_here
+
+# Resend API Key for Email OTP Verification
+RESEND_API_KEY=re_your_resend_api_key_here
+
+# Cloudflare R2 / S3-Compatible Storage Credentials
+R2_ENDPOINT=https://<account_id>.r2.cloudflarestorage.com
+R2_ACCESS_KEY_ID=<your_r2_access_key_id>
+R2_SECRET_ACCESS_KEY=<your_r2_secret_access_key>
+R2_BUCKET_NAME=<your_r2_bucket_name>
+```
+
 | Variable | Description |
 |:---------|:------------|
 | `PORT` | Server port (default: `3002`, auto-set by Render) |
 | `MONGODB_URI` | MongoDB Atlas connection string |
 | `JWT_SECRET` | Secret key for JWT token signing |
-| `R2_ACCESS_KEY_ID` | Cloudflare R2 access key |
-| `R2_SECRET_ACCESS_KEY` | Cloudflare R2 secret key |
+| `RESEND_API_KEY` | Resend API key for OTP email delivery (`re_...`) |
+| `R2_ACCESS_KEY_ID` | Cloudflare R2 access key ID |
+| `R2_SECRET_ACCESS_KEY` | Cloudflare R2 secret access key |
 | `R2_BUCKET_NAME` | R2 bucket name |
 | `R2_ENDPOINT` | R2 S3-compatible endpoint URL |
-| `SMTP_HOST` | Email SMTP host (e.g., `smtp.gmail.com`) |
-| `SMTP_PORT` | SMTP port (e.g., `587`) |
-| `SMTP_USER` | SMTP email address |
-| `SMTP_PASS` | SMTP password / App Password |
 
 ### Frontend (`frontend/.env`)
 
+```env
+# Backend API Base URL
+VITE_API_URL=https://jhagit-backend.onrender.com
+```
+
 | Variable | Description |
 |:---------|:------------|
-| `VITE_API_URL` | Backend API base URL (e.g., `https://jhagit-backend.onrender.com`) |
+| `VITE_API_URL` | Backend API base URL (e.g., `https://jhagit-backend.onrender.com` or `http://localhost:3002`) |
 
 > ⚠️ **Never commit `.env` files to version control.** Both repositories include `.gitignore` entries for `.env`.
 
