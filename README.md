@@ -1,11 +1,17 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/jhaGit-Distributed%20Version%20Control-58a6ff?style=for-the-badge&logo=git&logoColor=white" alt="jhaGit Badge" />
+  <a href="https://jhagit.kunalkj.dev">
+    <img src="https://res.cloudinary.com/dzffc9b1p/image/upload/v1786171616/copy_of_jhagit-logo-2_myvvyn.png" alt="jhaGit Logo" width="120" />
+  </a>
 </p>
 
-<h1 align="center">🚀 jhaGit</h1>
+<h1 align="center">jhaGit</h1>
 
 <p align="center">
   <strong>A full-stack Distributed Version Control System & Code Collaboration Platform — built from scratch.</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/jhaGit-Distributed%20Version%20Control-58a6ff?style=for-the-badge&logo=git&logoColor=white" alt="jhaGit Badge" />
 </p>
 
 <p align="center">
@@ -536,6 +542,19 @@ VITE_API_URL=https://jhagit-backend.onrender.com
 ---
 
 ## 🧪 Testing
+
+The backend includes custom test playbooks that validate the Git engine's core algorithms:
+
+```bash
+# Run merge integration tests
+node test_merge_deep.js
+
+# Run merge probe tests
+node test_merge_probe.js
+
+# Run full playbook tests
+node test_playbook.js
+```
 
 ### Post-Deploy Smoke Test
 
