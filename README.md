@@ -543,19 +543,6 @@ VITE_API_URL=https://jhagit-backend.onrender.com
 
 ## 🧪 Testing
 
-The backend includes custom test playbooks that validate the Git engine's core algorithms:
-
-```bash
-# Run merge integration tests
-node test_merge_deep.js
-
-# Run merge probe tests
-node test_merge_probe.js
-
-# Run full playbook tests
-node test_playbook.js
-```
-
 ### Post-Deploy Smoke Test
 
 After every deployment, verify these critical flows:
@@ -593,5 +580,5 @@ Contributions, issues, and feature requests are welcome!
 ---
 
 <p align="center">
-  Made with ❤️ by <a href="https://github.com/kunaljha17">Kunal Jha</a>
+  Made with ❤️ by <a href="https://github.com/kunaljha17">Kunal Kumar</a>
 </p>
